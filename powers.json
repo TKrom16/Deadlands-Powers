@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1",
+    "name": "Blast",
+    "rank": "Seasoned",
+    "power_points": "3",
+    "range": "Special",
+    "duration": "Instant",
+    "summary": "Launches an explosive energy blast.",
+    "full_text": "Blast creates an area attack using a Medium Blast Template that deals damage to all inside."
+  },
+  {
+    "id": "2",
+    "name": "Holy Symbol",
+    "rank": "Novice",
+    "power_points": "3",
+    "range": "Self",
+    "duration": "5",
+    "summary": "Protects the bearer against evil creatures.",
+    "full_text": "When invoked, the bearer radiates faith that wards off supernatural foes..."
+  }
+]
