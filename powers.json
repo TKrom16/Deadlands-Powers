@@ -7,8 +7,8 @@
     "range": "Special",
     "duration": "Instant",
     "summary": "Launches an explosive energy blast.",
-    "full_text": "Blast creates an area attack using a Medium Blast Template. Targets inside take 2d6 damage (or 3d6 with a raise). Damage type depends on trappings (fire, ice, etc).",
-    "notes": "Remember that Blast cannot be cast in close combat without provoking free attacks. Templates cannot overlap unless using different sources."
+    "full_text": "Blast creates an area attack using a Medium Blast Template. Targets inside take 2d6 damage (or 3d6 with a raise).",
+    "notes": "Cannot be cast in melee without provoking free attacks."
   },
   {
     "id": "2",
@@ -18,7 +18,7 @@
     "range": "Self",
     "duration": "5",
     "summary": "Protects the bearer against evil creatures.",
-    "full_text": "When invoked, the bearer radiates faith that wards off supernatural foes. Evil entities must make a Spirit roll to attack directly. The effect lasts for 5 rounds.",
-    "notes": "Only characters with a holy background (Miracles) may use this power. Requires a visible symbol of faith."
+    "full_text": "When invoked, the bearer radiates faith that wards off supernatural foes. Evil entities must make a Spirit roll to attack directly.",
+    "notes": "Requires a visible symbol of faith."
   }
 ]

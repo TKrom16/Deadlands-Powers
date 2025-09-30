@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SWADE / Deadlands Powers Reference</title>
+  <title>SWADE & Deadlands - Powers</title>
 
   <!-- Tailwind -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -15,21 +15,28 @@
     .modal.open { display: flex; }
     .modal-content { background: #fff; border-radius: .5rem; width: 100%; height: auto;
                      max-height: 90vh; overflow-y: auto; padding: 1.25rem; position: relative; }
-    @media (min-width: 768px) { /* Desktop modal */
+    @media (min-width: 768px) {
       .modal-content { max-width: 900px; height: auto; max-height: 80vh; margin: 2rem; }
     }
     .close-btn { position: absolute; top: .75rem; right: .75rem; font-weight: 700;
                  background: transparent; border: none; cursor: pointer; font-size: 1.5rem; }
     .modal-text { white-space: pre-wrap; }
     .focus-ring:focus { outline: 3px solid rgba(99,102,241,0.35); outline-offset: 2px; }
+    .tab-active { border-bottom: 2px solid #4F46E5; font-weight: 600; }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-900">
 
   <div class="container mx-auto p-4">
-    <h1 class="text-2xl md:text-3xl font-bold mb-4">SWADE / Deadlands Powers</h1>
+    <h1 class="text-2xl md:text-3xl font-bold mb-4">SWADE & Deadlands – Powers</h1>
 
-    <!-- ✅ Mobile-friendly filter bar -->
+    <!-- Tabs -->
+    <div class="flex gap-4 mb-4 border-b">
+      <button id="tabAll" class="pb-2 focus-ring tab-active">All Powers</button>
+      <button id="tabFavs" class="pb-2 focus-ring">My Powers ⭐</button>
+    </div>
+
+    <!-- Filter bar -->
     <div class="flex flex-wrap gap-2 mb-4">
       <select id="rankFilter" class="border p-2 rounded flex-shrink" aria-label="Filter by rank">
         <option value="">All Ranks</option>
@@ -49,7 +56,6 @@
     </div>
 
     <div id="status" class="text-sm text-gray-600 mb-4">Loading powers...</div>
-    <!-- Mobile = 1 column, Desktop = 2 -->
     <div id="powersList" class="grid gap-3 grid-cols-1 md:grid-cols-2"></div>
   </div>
 
@@ -73,16 +79,25 @@
         <h3 class="font-semibold mb-1">Special Notes</h3>
         <div id="modalNotesContent" class="text-sm text-gray-800"></div>
       </div>
+
+      <button id="modalFavBtn" class="mt-4 px-3 py-2 rounded bg-indigo-600 text-white">
+        ⭐ Add to My Powers
+      </button>
     </div>
   </div>
 
   <script>
     let allPowers = [];
+    let favorites = new Set();
+    let currentTab = "all";
+
     const statusEl = document.getElementById('status');
     const listEl = document.getElementById('powersList');
     const rankFilter = document.getElementById('rankFilter');
     const searchBox = document.getElementById('searchBox');
     const clearBtn = document.getElementById('clearBtn');
+    const tabAll = document.getElementById('tabAll');
+    const tabFavs = document.getElementById('tabFavs');
 
     const modal = document.getElementById('modal');
     const modalName = document.getElementById('modalName');
@@ -94,12 +109,14 @@
     const modalNotes = document.getElementById('modalNotes');
     const modalNotesContent = document.getElementById('modalNotesContent');
     const modalClose = document.getElementById('modalClose');
+    const modalFavBtn = document.getElementById('modalFavBtn');
 
     async function loadPowers() {
       try {
         const res = await fetch('powers.json', {cache: "no-store"});
         if (!res.ok) throw new Error('HTTP ' + res.status);
         allPowers = await res.json();
+        loadFavorites();
         statusEl.textContent = `Loaded ${allPowers.length} powers.`;
         renderPowers();
       } catch (err) {
@@ -108,16 +125,39 @@
       }
     }
 
+    function loadFavorites() {
+      const stored = localStorage.getItem('favorites');
+      if (stored) favorites = new Set(JSON.parse(stored));
+    }
+
+    function saveFavorites() {
+      localStorage.setItem('favorites', JSON.stringify([...favorites]));
+    }
+
+    function toggleFavorite(id) {
+      if (favorites.has(id)) {
+        favorites.delete(id);
+      } else {
+        favorites.add(id);
+      }
+      saveFavorites();
+      renderPowers();
+    }
+
     function renderPowers() {
       const rank = rankFilter.value;
       const q = (searchBox.value || '').toLowerCase().trim();
 
-      const filtered = allPowers.filter(p => {
+      let filtered = allPowers.filter(p => {
         const matchesRank = !rank || (p.rank || '') === rank;
         const hay = ((p.name || '') + ' ' + (p.summary || '')).toLowerCase();
         const matchesQuery = !q || hay.includes(q);
         return matchesRank && matchesQuery;
       });
+
+      if (currentTab === "favs") {
+        filtered = filtered.filter(p => favorites.has(p.id));
+      }
 
       listEl.innerHTML = '';
       if (filtered.length === 0) {
@@ -127,16 +167,39 @@
 
       filtered.forEach(p => {
         const card = document.createElement('div');
-        card.className = 'border rounded p-3 bg-white cursor-pointer hover:shadow focus-ring';
+        card.className = 'border rounded p-3 bg-white cursor-pointer hover:shadow focus-ring relative';
         card.tabIndex = 0;
 
+        // Header with rank + star button
         const header = document.createElement('div');
-        header.className = 'flex justify-between items-baseline';
-        header.innerHTML = `
-          <span class="font-semibold text-base md:text-lg">${p.name || '—'}</span>
-          <span class="text-sm text-gray-600">${p.rank || ''}</span>
-        `;
+        header.className = 'flex justify-between items-center';
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'font-semibold text-base md:text-lg';
+        nameSpan.textContent = p.name || '—';
 
+        const rankStarContainer = document.createElement('div');
+        rankStarContainer.className = 'flex items-center gap-2';
+
+        const rankSpan = document.createElement('span');
+        rankSpan.className = 'text-sm text-gray-600';
+        rankSpan.textContent = p.rank || '';
+
+        const favBtn = document.createElement('button');
+        favBtn.className = 'text-xl';
+        favBtn.innerHTML = favorites.has(p.id) ? '⭐' : '☆';
+        favBtn.title = favorites.has(p.id) ? 'Remove from My Powers' : 'Add to My Powers';
+        favBtn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          toggleFavorite(p.id);
+        });
+
+        rankStarContainer.appendChild(rankSpan);
+        rankStarContainer.appendChild(favBtn);
+
+        header.appendChild(nameSpan);
+        header.appendChild(rankStarContainer);
+
+        // Stats and summary
         const stats = document.createElement('div');
         stats.className = 'text-xs text-gray-700 mt-1 flex flex-wrap gap-2';
         stats.innerHTML = `
@@ -180,6 +243,9 @@
         modalNotes.classList.add('hidden');
       }
 
+      modalFavBtn.textContent = favorites.has(p.id) ? "⭐ Remove from My Powers" : "☆ Add to My Powers";
+      modalFavBtn.onclick = () => { toggleFavorite(p.id); closeModal(); };
+
       modal.classList.add('open');
       modal.setAttribute('aria-hidden', 'false');
       modalClose.focus();
@@ -194,9 +260,24 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
     modalClose.addEventListener('click', closeModal);
 
+    // Filters
     rankFilter.addEventListener('change', renderPowers);
     searchBox.addEventListener('input', renderPowers);
     clearBtn.addEventListener('click', () => { rankFilter.value = ''; searchBox.value = ''; renderPowers(); });
+
+    // Tabs
+    tabAll.addEventListener('click', () => {
+      currentTab = "all";
+      tabAll.classList.add("tab-active");
+      tabFavs.classList.remove("tab-active");
+      renderPowers();
+    });
+    tabFavs.addEventListener('click', () => {
+      currentTab = "favs";
+      tabFavs.classList.add("tab-active");
+      tabAll.classList.remove("tab-active");
+      renderPowers();
+    });
 
     document.addEventListener('DOMContentLoaded', loadPowers);
   </script>
