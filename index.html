@@ -9,14 +9,13 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
   <style>
-    /* Modal */
     .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
              background: rgba(0,0,0,0.6); z-index: 50; padding: 0; }
     .modal.open { display: flex; }
     .modal-content { background: #fff; border-radius: .5rem; width: 100%; height: auto;
                      max-height: 90vh; overflow-y: auto; padding: 1.25rem; position: relative; }
     @media (min-width: 768px) {
-      .modal-content { max-width: 900px; height: auto; max-height: 80vh; margin: 2rem; }
+      .modal-content { max-width: 900px; max-height: 80vh; margin: 2rem; }
     }
     .close-btn { position: absolute; top: .75rem; right: .75rem; font-weight: 700;
                  background: transparent; border: none; cursor: pointer; font-size: 1.5rem; }
@@ -30,59 +29,87 @@
   <div class="container mx-auto p-4">
     <h1 class="text-2xl md:text-3xl font-bold mb-4">SWADE & Deadlands – Powers</h1>
 
-    <!-- Tabs -->
-    <div class="flex gap-4 mb-4 border-b">
-      <button id="tabAll" class="pb-2 focus-ring tab-active">All Powers</button>
-      <button id="tabFavs" class="pb-2 focus-ring">My Powers ⭐</button>
+    <!-- Tabs + Common Modifiers -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <div class="flex gap-4 border-b pb-2">
+        <button id="tabAll" class="pb-2 focus-ring tab-active">All Powers</button>
+        <button id="tabFavs" class="pb-2 focus-ring">My Powers ⭐</button>
+      </div>
+      <button id="btnCommonMods" class="border p-2 rounded bg-white focus-ring">⚡ Common Modifiers</button>
     </div>
 
-    <!-- Filter bar -->
+    <!-- Filters -->
     <div class="flex flex-wrap gap-2 mb-4">
-      <select id="rankFilter" class="border p-2 rounded flex-shrink" aria-label="Filter by rank">
+      <select id="rankFilter" class="border p-2 rounded flex-shrink">
         <option value="">All Ranks</option>
         <option>Novice</option>
         <option>Seasoned</option>
         <option>Veteran</option>
         <option>Heroic</option>
-        <option>Legendary</option>
       </select>
-
       <input id="searchBox" type="search" placeholder="Search name or summary..." 
-             class="border p-2 flex-grow min-w-[150px] rounded" aria-label="Search powers" />
-
-      <button id="clearBtn" class="border p-2 rounded bg-gray-50 flex-shrink-0" title="Clear filters">
-        Clear
-      </button>
+             class="border p-2 flex-grow min-w-[150px] rounded" />
+      <button id="clearBtn" class="border p-2 rounded bg-gray-50 flex-shrink-0">Clear</button>
     </div>
 
     <div id="status" class="text-sm text-gray-600 mb-4">Loading powers...</div>
     <div id="powersList" class="grid gap-3 grid-cols-1 md:grid-cols-2"></div>
   </div>
 
-  <!-- Modal -->
-  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <!-- Power Modal -->
+  <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-content" id="modalContent" onclick="event.stopPropagation()">
-      <button id="modalClose" class="close-btn focus-ring" aria-label="Close (Esc)">✕</button>
-      <h2 id="modalName" class="text-xl font-bold"></h2>
-      <p id="modalRank" class="text-sm text-gray-600 mb-2"></p>
+      <button id="modalClose" class="close-btn">✕</button>
 
-      <div class="text-sm text-gray-700 mb-2 space-y-1">
+      <!-- Title + Rank -->
+      <h2 id="modalName" class="text-2xl font-bold mb-1"></h2>
+      <p id="modalRank" class="text-sm text-red-700 font-semibold mb-3"></p>
+
+      <!-- Stats row (emoticon style) -->
+      <div class="text-sm text-gray-700 mb-3 space-y-1">
         <div>🔋 <strong>Power Points:</strong> <span id="modalPP"></span></div>
         <div>🎯 <strong>Range:</strong> <span id="modalRange"></span></div>
         <div>🕑 <strong>Duration:</strong> <span id="modalDuration"></span></div>
       </div>
 
-      <hr class="my-3" />
-      <div id="modalText" class="modal-text text-gray-800"></div>
+      <!-- Divider before description -->
+      <hr class="my-3 border-gray-300" />
 
-      <div id="modalNotes" class="mt-4 hidden bg-yellow-50 border border-yellow-200 p-3 rounded">
-        <h3 class="font-semibold mb-1">Special Notes</h3>
-        <div id="modalNotesContent" class="text-sm text-gray-800"></div>
+      <!-- Full description -->
+      <div class="mb-6">
+  <h3 class="font-semibold mb-2">Description</h3>
+  <div id="modalText" class="modal-text text-gray-900 text-base leading-relaxed"></div>
+</div>
+
+      <!-- Divider before modifiers -->
+      <hr class="my-3 border-gray-300" />
+
+      <!-- Modifiers -->
+      <div id="modalModifiersContainer" class="mt-4 hidden">
+        <h3 class="font-semibold mb-2">Power Modifiers</h3>
+        <div id="modalModifiers" class="space-y-3"></div>
       </div>
 
-      <button id="modalFavBtn" class="mt-4 px-3 py-2 rounded bg-indigo-600 text-white">
-        ⭐ Add to My Powers
-      </button>
+            <!-- Divider after modifiers -->
+      <hr class="my-3 border-gray-300" />
+
+            <!--Source-->
+      <p id="modalSource" class="text-sm text-gray-600 mb-3"></p>
+
+      <!-- Buttons -->
+      <div class="mt-6 flex gap-2">
+        <button id="modalFavBtn" class="px-3 py-2 rounded bg-indigo-600 text-white">⭐ Add to My Powers</button>
+        <button id="modalCopyBtn" class="px-3 py-2 rounded border bg-white">Copy Summary</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Common Modifiers Modal -->
+  <div id="commonModal" class="modal" aria-hidden="true">
+    <div class="modal-content" id="commonModalContent" onclick="event.stopPropagation()">
+      <button id="commonModalClose" class="close-btn">✕</button>
+      <h2 class="text-xl font-bold mb-2">Common Modifiers</h2>
+      <div id="commonModifiersList" class="space-y-2"></div>
     </div>
   </div>
 
@@ -90,14 +117,16 @@
     let allPowers = [];
     let favorites = new Set();
     let currentTab = "all";
+    let commonModifiers = [];
 
-    const statusEl = document.getElementById('status');
     const listEl = document.getElementById('powersList');
+    const statusEl = document.getElementById('status');
     const rankFilter = document.getElementById('rankFilter');
     const searchBox = document.getElementById('searchBox');
     const clearBtn = document.getElementById('clearBtn');
     const tabAll = document.getElementById('tabAll');
     const tabFavs = document.getElementById('tabFavs');
+    const btnCommonMods = document.getElementById('btnCommonMods');
 
     const modal = document.getElementById('modal');
     const modalName = document.getElementById('modalName');
@@ -106,23 +135,25 @@
     const modalRange = document.getElementById('modalRange');
     const modalDuration = document.getElementById('modalDuration');
     const modalText = document.getElementById('modalText');
-    const modalNotes = document.getElementById('modalNotes');
-    const modalNotesContent = document.getElementById('modalNotesContent');
+    const modalModifiersContainer = document.getElementById('modalModifiersContainer');
+    const modalModifiers = document.getElementById('modalModifiers');
     const modalClose = document.getElementById('modalClose');
     const modalFavBtn = document.getElementById('modalFavBtn');
+    const modalCopyBtn = document.getElementById('modalCopyBtn');
+
+    const commonModal = document.getElementById('commonModal');
+    const commonModifiersList = document.getElementById('commonModifiersList');
+    const commonModalClose = document.getElementById('commonModalClose');
 
     async function loadPowers() {
-      try {
-        const res = await fetch('powers.json', {cache: "no-store"});
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        allPowers = await res.json();
-        loadFavorites();
-        statusEl.textContent = `Loaded ${allPowers.length} powers.`;
-        renderPowers();
-      } catch (err) {
-        console.error('Failed to load powers.json', err);
-        statusEl.innerHTML = `<span class="text-red-600">Could not load powers.json</span>`;
-      }
+      const res = await fetch('powers.json');
+      const json = await res.json();
+      commonModifiers = json.common_modifiers || [];
+      allPowers = json.powers || [];
+      loadFavorites();
+      renderCommonModifiers();
+      renderPowers();
+      statusEl.textContent = `Loaded ${allPowers.length} powers.`;
     }
 
     function loadFavorites() {
@@ -135,151 +166,129 @@
     }
 
     function toggleFavorite(id) {
-      if (favorites.has(id)) {
-        favorites.delete(id);
-      } else {
-        favorites.add(id);
-      }
+      favorites.has(id) ? favorites.delete(id) : favorites.add(id);
       saveFavorites();
       renderPowers();
     }
 
     function renderPowers() {
       const rank = rankFilter.value;
-      const q = (searchBox.value || '').toLowerCase().trim();
+      const q = searchBox.value.toLowerCase().trim();
 
       let filtered = allPowers.filter(p => {
-        const matchesRank = !rank || (p.rank || '') === rank;
-        const hay = ((p.name || '') + ' ' + (p.summary || '')).toLowerCase();
-        const matchesQuery = !q || hay.includes(q);
-        return matchesRank && matchesQuery;
+        return (!rank || p.rank === rank) &&
+               (!q || (p.name + " " + p.summary).toLowerCase().includes(q));
       });
 
       if (currentTab === "favs") {
         filtered = filtered.filter(p => favorites.has(p.id));
       }
 
-      listEl.innerHTML = '';
-      if (filtered.length === 0) {
-        listEl.innerHTML = '<div class="p-4 text-gray-600">No powers found.</div>';
-        return;
-      }
+      listEl.innerHTML = filtered.length ? "" : '<div class="p-4 text-gray-600">No powers found.</div>';
 
       filtered.forEach(p => {
         const card = document.createElement('div');
-        card.className = 'border rounded p-3 bg-white cursor-pointer hover:shadow focus-ring relative';
-        card.tabIndex = 0;
+        card.className = 'border rounded p-3 bg-white cursor-pointer hover:shadow';
 
-        // Header with rank + star button
         const header = document.createElement('div');
         header.className = 'flex justify-between items-center';
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'font-semibold text-base md:text-lg';
-        nameSpan.textContent = p.name || '—';
+        header.innerHTML = `<span class="font-semibold">${p.name}</span>
+                            <div class="flex items-center gap-2">
+                              <span class="text-sm text-gray-600">${p.rank}</span>
+                              <button class="text-xl">${favorites.has(p.id) ? "⭐" : "☆"}</button>
+                            </div>`;
 
-        const rankStarContainer = document.createElement('div');
-        rankStarContainer.className = 'flex items-center gap-2';
+        const favBtn = header.querySelector("button");
+        favBtn.onclick = e => { e.stopPropagation(); toggleFavorite(p.id); };
 
-        const rankSpan = document.createElement('span');
-        rankSpan.className = 'text-sm text-gray-600';
-        rankSpan.textContent = p.rank || '';
+        const stats = `<div class="text-xs text-gray-700 mt-1 flex gap-2">
+          <span>🔋 ${p.power_points}</span>
+          <span>🎯 ${p.range}</span>
+          <span>🕑 ${p.duration}</span>
+        </div>`;
 
-        const favBtn = document.createElement('button');
-        favBtn.className = 'text-xl';
-        favBtn.innerHTML = favorites.has(p.id) ? '⭐' : '☆';
-        favBtn.title = favorites.has(p.id) ? 'Remove from My Powers' : 'Add to My Powers';
-        favBtn.addEventListener('click', (ev) => {
-          ev.stopPropagation();
-          toggleFavorite(p.id);
-        });
+        const summary = `<p class="text-sm mt-2">${p.summary}</p>`;
 
-        rankStarContainer.appendChild(rankSpan);
-        rankStarContainer.appendChild(favBtn);
-
-        header.appendChild(nameSpan);
-        header.appendChild(rankStarContainer);
-
-        // Stats and summary
-        const stats = document.createElement('div');
-        stats.className = 'text-xs text-gray-700 mt-1 flex flex-wrap gap-2';
-        stats.innerHTML = `
-          <span>🔋 ${p.power_points || '-'}</span>
-          <span>🎯 ${p.range || '-'}</span>
-          <span>🕑 ${p.duration || '-'}</span>
-        `;
-
-        const summary = document.createElement('p');
-        summary.className = 'text-sm mt-2 text-gray-800';
-        summary.textContent = p.summary || '';
-
+        card.innerHTML = "";
         card.appendChild(header);
-        card.appendChild(stats);
-        card.appendChild(summary);
-
-        card.addEventListener('click', () => openModal(p));
-        card.addEventListener('keydown', (ev) => {
-          if (ev.key === 'Enter' || ev.key === ' ') {
-            ev.preventDefault();
-            openModal(p);
-          }
-        });
+        card.insertAdjacentHTML("beforeend", stats + summary);
+        card.onclick = () => openModal(p);
 
         listEl.appendChild(card);
       });
     }
 
     function openModal(p) {
-      modalName.textContent = p.name || '';
-      modalRank.textContent = p.rank ? `Rank: ${p.rank}` : '';
-      modalPP.textContent = p.power_points || '';
-      modalRange.textContent = p.range || '';
-      modalDuration.textContent = p.duration || '';
-      modalText.textContent = p.full_text || '';
+      modalName.textContent = p.name;
+      modalRank.textContent = `Rank: ${p.rank}`;
+      modalPP.textContent = p.power_points;
+      modalRange.textContent = p.range;
+      modalDuration.textContent = p.duration;
+      
+      modalText.innerHTML = p.full_text;
 
-      if (p.notes) {
-        modalNotes.classList.remove('hidden');
-        modalNotesContent.textContent = p.notes;
+      modalModifiers.innerHTML = "";
+      if (p.modifiers?.length) {
+        modalModifiersContainer.classList.remove("hidden");
+        p.modifiers.forEach(m => {
+          modalModifiers.insertAdjacentHTML("beforeend",
+            `<div class="border rounded bg-gray-50 p-3">
+               <p class="font-semibold text-red-700">
+                 ${m.name} <span class="text-gray-800">(${m.cost})</span>
+               </p>
+               <p class="text-sm text-gray-700 mt-1">${m.description}</p>
+             </div>`);
+        });
+
+        document.getElementById("modalSource").textContent = `Source: ${p.source}`;
+
       } else {
-        modalNotes.classList.add('hidden');
+        modalModifiersContainer.classList.add("hidden");
       }
 
       modalFavBtn.textContent = favorites.has(p.id) ? "⭐ Remove from My Powers" : "☆ Add to My Powers";
       modalFavBtn.onclick = () => { toggleFavorite(p.id); closeModal(); };
 
-      modal.classList.add('open');
-      modal.setAttribute('aria-hidden', 'false');
-      modalClose.focus();
+      modalCopyBtn.onclick = () => {
+        navigator.clipboard.writeText(`${p.name} (${p.rank})\nPP: ${p.power_points}, Range: ${p.range}, Duration: ${p.duration}\n\n${p.full_text}`);
+        modalCopyBtn.textContent = "Copied!";
+        setTimeout(() => modalCopyBtn.textContent = "Copy Summary", 1200);
+      };
+
+      modal.classList.add("open");
     }
 
-    function closeModal() {
-      modal.classList.remove('open');
-      modal.setAttribute('aria-hidden', 'true');
+    function closeModal() { modal.classList.remove("open"); }
+    modalClose.onclick = closeModal;
+    modal.onclick = e => { if (e.target === modal) closeModal(); };
+    document.addEventListener('keydown', e => { if (e.key === "Escape") { closeModal(); closeCommonModal(); }});
+
+    function renderCommonModifiers() {
+      commonModifiersList.innerHTML = "";
+      commonModifiers.forEach(m => {
+        commonModifiersList.insertAdjacentHTML("beforeend",
+          `<div class="border rounded p-3 bg-gray-50">
+             <p class="font-semibold text-red-700">
+               ▪ ${m.name} <span class="text-gray-800">(${m.cost})</span>
+             </p>
+             <p class="text-sm text-gray-800 ml-4">${m.description}</p>
+           </div>`);
+      });
     }
 
-    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
-    modalClose.addEventListener('click', closeModal);
+    function openCommonModal() { commonModal.classList.add("open"); }
+    function closeCommonModal() { commonModal.classList.remove("open"); }
+    btnCommonMods.onclick = openCommonModal;
+    commonModalClose.onclick = closeCommonModal;
+    commonModal.onclick = e => { if (e.target === commonModal) closeCommonModal(); };
 
-    // Filters
-    rankFilter.addEventListener('change', renderPowers);
-    searchBox.addEventListener('input', renderPowers);
-    clearBtn.addEventListener('click', () => { rankFilter.value = ''; searchBox.value = ''; renderPowers(); });
+    rankFilter.onchange = renderPowers;
+    searchBox.oninput = renderPowers;
+    clearBtn.onclick = () => { rankFilter.value=""; searchBox.value=""; renderPowers(); };
+    tabAll.onclick = () => { currentTab="all"; tabAll.classList.add("tab-active"); tabFavs.classList.remove("tab-active"); renderPowers(); };
+    tabFavs.onclick = () => { currentTab="favs"; tabFavs.classList.add("tab-active"); tabAll.classList.remove("tab-active"); renderPowers(); };
 
-    // Tabs
-    tabAll.addEventListener('click', () => {
-      currentTab = "all";
-      tabAll.classList.add("tab-active");
-      tabFavs.classList.remove("tab-active");
-      renderPowers();
-    });
-    tabFavs.addEventListener('click', () => {
-      currentTab = "favs";
-      tabFavs.classList.add("tab-active");
-      tabAll.classList.remove("tab-active");
-      renderPowers();
-    });
-
-    document.addEventListener('DOMContentLoaded', loadPowers);
+    document.addEventListener("DOMContentLoaded", loadPowers);
   </script>
 </body>
 </html>
