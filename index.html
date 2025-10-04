@@ -3,11 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Deadlands Powers App</title>
-
-  <!-- Tailwind -->
+  <title>Deadlands Companion</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
   <style>
     .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
              background: rgba(0,0,0,0.6); z-index: 50; padding: 0; }
@@ -28,90 +25,134 @@
 
   <div class="container mx-auto p-4 text-center">
     <!-- Logo -->
-    <img src="https://raw.githubusercontent.com/TKrom16/Deadlands-Powers/refs/heads/main/New_Deadlands_Logo.png" alt="Deadlands Logo" 
-         alt="Deadlands Logo" 
-         class="mx-auto w-full max-w-md mb-4">
+    <img src="https://raw.githubusercontent.com/TKrom16/Deadlands-Powers/refs/heads/main/New_Deadlands_Logo.png" alt="Deadlands Logo" class="mx-auto w-full max-w-md mb-4">
 
     <!-- Title -->
-    <h1 class="text-2xl md:text-3xl font-bold mb-6">Powers App</h1>
-  </div>
+    <h1 class="text-2xl md:text-3xl font-bold mb-6">Companion App</h1>
 
-    <!-- Tabs + Rank Filter + Common Modifiers -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-      <div class="flex gap-4 border-b pb-2">
-        <button id="tabAll" class="pb-2 focus-ring tab-active">All Powers</button>
-        <button id="tabFavs" class="pb-2 focus-ring">My Powers ⭐</button>
+    <!-- Main tabs -->
+    <div class="flex justify-center gap-4 mb-4">
+      <button id="tab_powers" class="px-3 py-2 rounded bg-white border tab-active">Powers</button>
+      <button id="tab_edges" class="px-3 py-2 rounded bg-white border">Edges</button>
+      <button id="tab_hindrances" class="px-3 py-2 rounded bg-white border">Hindrances</button>
+      <button id="tab_traits" class="px-3 py-2 rounded bg-white border">Traits</button>
+    </div>
+
+    <!-- Secondary row: Sub-tabs and controls -->
+    <div id="controls" class="mb-4">
+      <!-- For Powers: All / My, Rank filter, Search, Common Modifiers -->
+      <div id="controls_powers" class="hidden">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex items-center gap-2">
+            <button id="powers_view_all" class="px-2 py-1 rounded bg-white border tab-active">All Powers</button>
+            <button id="powers_view_my" class="px-2 py-1 rounded bg-white border">My Powers ⭐</button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <select id="rankFilter_powers" class="border p-2 rounded">
+              <option value="">All Ranks</option>
+              <option>Novice</option>
+              <option>Seasoned</option>
+              <option>Veteran</option>
+              <option>Heroic</option>
+              <option>Legendary</option>
+            </select>
+            <input id="searchBox_powers" type="search" placeholder="Search name or summary..." class="border p-2 rounded min-w-0">
+            <button id="clearBtn_powers" class="border p-2 rounded bg-gray-50">Clear</button>
+            <button id="btnCommonMods" class="border p-2 rounded bg-white focus-ring">Common Power Modifiers</button>
+          </div>
+        </div>
       </div>
-      <div class="flex items-center gap-2">
-        <select id="rankFilter" class="border p-2 rounded">
-          <option value="">All Ranks</option>
-          <option>Novice</option>
-          <option>Seasoned</option>
-          <option>Veteran</option>
-          <option>Heroic</option>
-        </select>
-        <button id="btnCommonMods" class="border p-2 rounded bg-white focus-ring">🔧 Common Modifiers</button>
+
+      <!-- For Edges -->
+      <div id="controls_edges" class="hidden">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex items-center gap-2">
+            <button id="edges_view_all" class="px-2 py-1 rounded bg-white border tab-active">All Edges</button>
+            <button id="edges_view_my" class="px-2 py-1 rounded bg-white border">My Edges ⭐</button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <select id="rankFilter_edges" class="border p-2 rounded">
+              <option value="">All Ranks</option>
+              <option>Novice</option>
+              <option>Seasoned</option>
+              <option>Veteran</option>
+              <option>Heroic</option>
+              <option>Legendary</option>
+            </select>
+            <select id="categoryFilter_edges" class="border p-2 rounded">
+              <option value="">All Categories</option>
+            </select>
+            <input id="searchBox_edges" type="search" placeholder="Search name or summary..." class="border p-2 rounded min-w-0">
+            <button id="clearBtn_edges" class="border p-2 rounded bg-gray-50">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- For Hindrances -->
+      <div id="controls_hindrances" class="hidden">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex items-center gap-2">
+            <button id="hindrances_view_all" class="px-2 py-1 rounded bg-white border tab-active">All Hindrances</button>
+            <button id="hindrances_view_my" class="px-2 py-1 rounded bg-white border">My Hindrances ⭐</button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <select id="typeFilter_hindrances" class="border p-2 rounded">
+              <option value="">All Types</option>
+              <option>Major</option>
+              <option>Minor</option>
+            </select>
+            <input id="searchBox_hindrances" type="search" placeholder="Search name or summary..." class="border p-2 rounded min-w-0">
+            <button id="clearBtn_hindrances" class="border p-2 rounded bg-gray-50">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- For Traits (always visible as a secondary panel) -->
+      <div id="controls_traits" class="hidden">
+        <div class="flex items-center gap-2 justify-center">
+          <button id="traits_view_all" class="px-2 py-1 rounded bg-white border tab-active">All Traits</button>
+          <input id="searchBox_traits" type="search" placeholder="Search traits..." class="border p-2 rounded min-w-0">
+          <button id="clearBtn_traits" class="border p-2 rounded bg-gray-50">Clear</button>
+        </div>
       </div>
     </div>
 
-    <!-- Search + Clear -->
-    <div class="flex items-center gap-2 mb-4">
-      <input id="searchBox" 
-             type="search" 
-             placeholder="Search name or summary..." 
-             class="border p-2 rounded flex-grow min-w-0" />
-      <button id="clearBtn" 
-              class="border p-2 rounded bg-gray-50 flex-shrink-0">
-        Clear
-      </button>
+    <!-- Main lists area -->
+    <div id="listArea">
+      <div id="itemsList" class="grid gap-3 grid-cols-1 md:grid-cols-2"></div>
     </div>
-
-    <div id="powersList" class="grid gap-3 grid-cols-1 md:grid-cols-2"></div>
   </div>
 
-  <!-- Power Modal -->
+  <!-- Modals -->
   <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-content" id="modalContent" onclick="event.stopPropagation()">
       <button id="modalClose" class="close-btn">✕</button>
-
-      <!-- Title + Rank -->
       <h2 id="modalName" class="text-2xl font-bold mb-1"></h2>
       <p id="modalRank" class="text-sm text-red-700 font-semibold mb-3"></p>
 
-      <!-- Stats row -->
-      <div class="text-sm text-gray-700 mb-3 space-y-1">
-        <div>🔋 <strong>Power Points:</strong> <span id="modalPP"></span></div>
-        <div>📏 <strong>Range:</strong> <span id="modalRange"></span></div>
-        <div>🕑 <strong>Duration:</strong> <span id="modalDuration"></span></div>
-      </div>
+      <div id="modalStats" class="text-sm text-gray-700 mb-3 space-y-1"></div>
 
-      <!-- Divider before description -->
       <hr class="my-3 border-gray-300" />
 
-      <!-- Full description -->
       <div class="mb-6">
         <h3 class="font-semibold mb-2">Description</h3>
         <div id="modalText" class="modal-text text-gray-900 text-base leading-relaxed"></div>
       </div>
 
-      <!-- Divider before modifiers -->
       <hr class="my-3 border-gray-300" />
 
-      <!-- Modifiers -->
       <div id="modalModifiersContainer" class="mt-4 hidden">
         <h3 class="font-semibold mb-2">Power Modifiers</h3>
         <div id="modalModifiers" class="space-y-3"></div>
       </div>
 
-      <!-- Divider after modifiers -->
-      <hr class="my-3 border-gray-300" />
-
-      <!-- Source -->
       <p id="modalSource" class="text-sm text-gray-600 mb-3"></p>
 
-      <!-- Buttons -->
       <div class="mt-6 flex gap-2">
-        <button id="modalFavBtn" class="px-3 py-2 rounded bg-indigo-600 text-white">⭐ Add to My Powers</button>
+        <button id="modalFavBtn" class="px-3 py-2 rounded bg-indigo-600 text-white">⭐ Add to My</button>
         <button id="modalCopyBtn" class="px-3 py-2 rounded border bg-white">Copy Summary</button>
       </div>
     </div>
@@ -121,183 +162,378 @@
   <div id="commonModal" class="modal" aria-hidden="true">
     <div class="modal-content" id="commonModalContent" onclick="event.stopPropagation()">
       <button id="commonModalClose" class="close-btn">✕</button>
-      <h2 class="text-xl font-bold mb-2">Common Modifiers</h2>
+      <h2 class="text-xl font-bold mb-2">Common Power Modifiers</h2>
       <div id="commonModifiersList" class="space-y-2"></div>
     </div>
   </div>
 
-  <script>
-    let allPowers = [];
-    let favorites = new Set();
-    let currentTab = "all";
-    let commonModifiers = [];
+<script>
+let data = {};
+let favorites = { powers: new Set(), edges: new Set(), hindrances: new Set() };
+let currentMain = 'powers';
+let currentSub = 'all'; // 'all' or 'my'
+let currentEdgeCategoryOptions = new Set();
 
-    const listEl = document.getElementById('powersList');
-    const rankFilter = document.getElementById('rankFilter');
-    const searchBox = document.getElementById('searchBox');
-    const clearBtn = document.getElementById('clearBtn');
-    const tabAll = document.getElementById('tabAll');
-    const tabFavs = document.getElementById('tabFavs');
-    const btnCommonMods = document.getElementById('btnCommonMods');
+// Elements
+const itemsList = document.getElementById('itemsList');
+const tab_powers = document.getElementById('tab_powers');
+const tab_edges = document.getElementById('tab_edges');
+const tab_hindrances = document.getElementById('tab_hindrances');
+const tab_traits = document.getElementById('tab_traits');
 
-    const modal = document.getElementById('modal');
-    const modalName = document.getElementById('modalName');
-    const modalRank = document.getElementById('modalRank');
-    const modalPP = document.getElementById('modalPP');
-    const modalRange = document.getElementById('modalRange');
-    const modalDuration = document.getElementById('modalDuration');
-    const modalText = document.getElementById('modalText');
-    const modalModifiersContainer = document.getElementById('modalModifiersContainer');
-    const modalModifiers = document.getElementById('modalModifiers');
-    const modalClose = document.getElementById('modalClose');
-    const modalFavBtn = document.getElementById('modalFavBtn');
-    const modalCopyBtn = document.getElementById('modalCopyBtn');
+// Controls groups
+const controls_powers = document.getElementById('controls_powers');
+const controls_edges = document.getElementById('controls_edges');
+const controls_hindrances = document.getElementById('controls_hindrances');
+const controls_traits = document.getElementById('controls_traits');
 
-    const commonModal = document.getElementById('commonModal');
-    const commonModifiersList = document.getElementById('commonModifiersList');
-    const commonModalClose = document.getElementById('commonModalClose');
+// Powers controls
+const powers_view_all = document.getElementById('powers_view_all');
+const powers_view_my = document.getElementById('powers_view_my');
+const rankFilter_powers = document.getElementById('rankFilter_powers');
+const searchBox_powers = document.getElementById('searchBox_powers');
+const clearBtn_powers = document.getElementById('clearBtn_powers');
+const btnCommonMods = document.getElementById('btnCommonMods');
 
-    async function loadPowers() {
-      const res = await fetch('powers.json');
-      const json = await res.json();
-      commonModifiers = json.common_modifiers || [];
-      allPowers = json.powers || [];
-      loadFavorites();
-      renderCommonModifiers();
-      renderPowers();
+// Edges controls
+const edges_view_all = document.getElementById('edges_view_all');
+const edges_view_my = document.getElementById('edges_view_my');
+const rankFilter_edges = document.getElementById('rankFilter_edges');
+const categoryFilter_edges = document.getElementById('categoryFilter_edges');
+const searchBox_edges = document.getElementById('searchBox_edges');
+const clearBtn_edges = document.getElementById('clearBtn_edges');
+
+// Hindrances controls
+const hindrances_view_all = document.getElementById('hindrances_view_all');
+const hindrances_view_my = document.getElementById('hindrances_view_my');
+const typeFilter_hindrances = document.getElementById('typeFilter_hindrances');
+const searchBox_hindrances = document.getElementById('searchBox_hindrances');
+const clearBtn_hindrances = document.getElementById('clearBtn_hindrances');
+
+// Traits controls
+const searchBox_traits = document.getElementById('searchBox_traits');
+const clearBtn_traits = document.getElementById('clearBtn_traits');
+
+// Modal elements
+const modal = document.getElementById('modal');
+const modalName = document.getElementById('modalName');
+const modalRank = document.getElementById('modalRank');
+const modalStats = document.getElementById('modalStats');
+const modalPP = document.getElementById('modalPP');
+const modalRange = document.getElementById('modalRange');
+const modalDuration = document.getElementById('modalDuration');
+const modalText = document.getElementById('modalText');
+const modalModifiersContainer = document.getElementById('modalModifiersContainer');
+const modalModifiers = document.getElementById('modalModifiers');
+const modalClose = document.getElementById('modalClose');
+const modalFavBtn = document.getElementById('modalFavBtn');
+const modalCopyBtn = document.getElementById('modalCopyBtn');
+const modalSource = document.getElementById('modalSource');
+
+const commonModal = document.getElementById('commonModal');
+const commonModifiersList = document.getElementById('commonModifiersList');
+const commonModalClose = document.getElementById('commonModalClose');
+
+// Load data.json
+async function loadData() {
+  const res = await fetch('data.json');
+  data = await res.json();
+  // populate category filter for edges
+  (data.edges || []).forEach(e => { if (e.category) currentEdgeCategoryOptions.add(e.category); });
+  populateEdgeCategories();
+  loadFavorites();
+  renderCommonModifiers();
+  showMain('powers');
+}
+
+// Populate category dropdown
+function populateEdgeCategories(){
+  categoryFilter_edges.innerHTML = '<option value=\"\">All Categories</option>';
+  Array.from(currentEdgeCategoryOptions).sort().forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat; opt.textContent = cat;
+    categoryFilter_edges.appendChild(opt);
+  });
+}
+
+// Favorites persistence
+function loadFavorites(){
+  try{
+    const raw = localStorage.getItem('favorites');
+    if(raw){
+      const obj = JSON.parse(raw);
+      favorites.powers = new Set((obj.powers||[]).map(String));
+      favorites.edges = new Set((obj.edges||[]).map(String));
+      favorites.hindrances = new Set((obj.hindrances||[]).map(String));
     }
+  }catch(e){
+    console.warn('Could not load favorites', e);
+  }
+}
 
-    function loadFavorites() {
-      const stored = localStorage.getItem('favorites');
-      if (stored) favorites = new Set(JSON.parse(stored));
-    }
+function saveFavorites(){
+  const obj = {
+    powers: [...favorites.powers],
+    edges: [...favorites.edges],
+    hindrances: [...favorites.hindrances]
+  };
+  localStorage.setItem('favorites', JSON.stringify(obj));
+}
 
-    function saveFavorites() {
-      localStorage.setItem('favorites', JSON.stringify([...favorites]));
-    }
+function toggleFavorite(kind, id){
+  id = String(id);
+  if(kind === 'powers'){
+    favorites.powers.has(id) ? favorites.powers.delete(id) : favorites.powers.add(id);
+  } else if(kind === 'edges'){
+    favorites.edges.has(id) ? favorites.edges.delete(id) : favorites.edges.add(id);
+  } else if(kind === 'hindrances'){
+    favorites.hindrances.has(id) ? favorites.hindrances.delete(id) : favorites.hindrances.add(id);
+  }
+  saveFavorites();
+  renderCurrentView();
+}
 
-    function toggleFavorite(id) {
-      favorites.has(id) ? favorites.delete(id) : favorites.add(id);
-      saveFavorites();
-      renderPowers();
-    }
+// UI switching
+function clearActiveMain(){
+  [tab_powers, tab_edges, tab_hindrances, tab_traits].forEach(t => t.classList.remove('tab-active'));
+  [controls_powers, controls_edges, controls_hindrances, controls_traits].forEach(c => c.classList.add('hidden'));
+}
 
-    function renderPowers() {
-      const rank = rankFilter.value;
-      const q = searchBox.value.toLowerCase().trim();
+function showMain(main){
+  currentMain = main;
+  clearActiveMain();
+  if(main === 'powers'){ tab_powers.classList.add('tab-active'); controls_powers.classList.remove('hidden'); currentSub='all'; activateSubTabs('powers'); }
+  if(main === 'edges'){ tab_edges.classList.add('tab-active'); controls_edges.classList.remove('hidden'); currentSub='all'; activateSubTabs('edges'); }
+  if(main === 'hindrances'){ tab_hindrances.classList.add('tab-active'); controls_hindrances.classList.remove('hidden'); currentSub='all'; activateSubTabs('hindrances'); }
+  if(main === 'traits'){ tab_traits.classList.add('tab-active'); controls_traits.classList.remove('hidden'); currentSub='all'; activateSubTabs('traits'); }
+  renderCurrentView();
+}
 
-      let filtered = allPowers.filter(p => {
-        return (!rank || p.rank === rank) &&
-               (!q || (p.name + " " + p.summary).toLowerCase().includes(q));
-      });
+tab_powers.onclick = () => showMain('powers');
+tab_edges.onclick = () => showMain('edges');
+tab_hindrances.onclick = () => showMain('hindrances');
+tab_traits.onclick = () => showMain('traits');
 
-      if (currentTab === "favs") {
-        filtered = filtered.filter(p => favorites.has(p.id));
-      }
+// Sub-tab activation
+function activateSubTabs(kind){
+  if(kind === 'powers'){
+    powers_view_all.classList.add('tab-active'); powers_view_my.classList.remove('tab-active');
+  }else if(kind === 'edges'){
+    edges_view_all.classList.add('tab-active'); edges_view_my.classList.remove('tab-active');
+  }else if(kind === 'hindrances'){
+    hindrances_view_all.classList.add('tab-active'); hindrances_view_my.classList.remove('tab-active');
+  }else if(kind === 'traits'){
+    // no sub-tabs needed
+  }
+}
 
-      listEl.innerHTML = filtered.length ? "" : '<div class="p-4 text-gray-600">No powers found.</div>';
+// Sub-tab handlers
+powers_view_all.onclick = () => { currentSub='all'; powers_view_all.classList.add('tab-active'); powers_view_my.classList.remove('tab-active'); renderCurrentView(); };
+powers_view_my.onclick = () => { currentSub='my'; powers_view_my.classList.add('tab-active'); powers_view_all.classList.remove('tab-active'); renderCurrentView(); };
 
-      filtered.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'border rounded p-3 bg-white cursor-pointer hover:shadow';
+edges_view_all.onclick = () => { currentSub='all'; edges_view_all.classList.add('tab-active'); edges_view_my.classList.remove('tab-active'); renderCurrentView(); };
+edges_view_my.onclick = () => { currentSub='my'; edges_view_my.classList.add('tab-active'); edges_view_all.classList.remove('tab-active'); renderCurrentView(); };
 
-        const header = document.createElement('div');
-        header.className = 'flex justify-between items-center';
-        header.innerHTML = `<span class="font-semibold">${p.name}</span>
-                            <div class="flex items-center gap-2">
-                              <span class="text-sm text-gray-600">${p.rank}</span>
-                              <button class="text-xl">${favorites.has(p.id) ? "⭐" : "☆"}</button>
-                            </div>`;
+hindrances_view_all.onclick = () => { currentSub='all'; hindrances_view_all.classList.add('tab-active'); hindrances_view_my.classList.remove('tab-active'); renderCurrentView(); };
+hindrances_view_my.onclick = () => { currentSub='my'; hindrances_view_my.classList.add('tab-active'); hindrances_view_all.classList.remove('tab-active'); renderCurrentView(); };
 
-        const favBtn = header.querySelector("button");
-        favBtn.onclick = e => { e.stopPropagation(); toggleFavorite(p.id); };
+// Clear buttons
+clearBtn_powers.onclick = () => { rankFilter_powers.value=''; searchBox_powers.value=''; renderCurrentView(); };
+clearBtn_edges.onclick = () => { rankFilter_edges.value=''; categoryFilter_edges.value=''; searchBox_edges.value=''; renderCurrentView(); };
+clearBtn_hindrances.onclick = () => { typeFilter_hindrances.value=''; searchBox_hindrances.value=''; renderCurrentView(); };
+clearBtn_traits.onclick = () => { searchBox_traits.value=''; renderCurrentView(); };
 
-        const stats = `<div class="text-xs text-gray-700 mt-1 flex gap-2">
-          <span>🔋 ${p.power_points}</span>
-          <span>📏 ${p.range}</span>
-          <span>🕑 ${p.duration}</span>
-        </div>`;
+// Search handlers
+searchBox_powers.oninput = renderCurrentView;
+searchBox_edges.oninput = renderCurrentView;
+searchBox_hindrances.oninput = renderCurrentView;
+searchBox_traits.oninput = renderCurrentView;
+rankFilter_powers.onchange = renderCurrentView;
+rankFilter_edges.onchange = renderCurrentView;
+categoryFilter_edges.onchange = renderCurrentView;
+typeFilter_hindrances.onchange = renderCurrentView;
 
-        const summary = `<p class="text-sm mt-2">${p.summary}</p>`;
+// Render helpers
+function renderCurrentView(){
+  itemsList.innerHTML = '';
+  if(currentMain === 'powers') renderPowers();
+  if(currentMain === 'edges') renderEdges();
+  if(currentMain === 'hindrances') renderHindrances();
+  if(currentMain === 'traits') renderTraits();
+}
 
-        card.innerHTML = "";
-        card.appendChild(header);
-        card.insertAdjacentHTML("beforeend", stats + summary);
-        card.onclick = () => openModal(p);
+// Powers render
+function renderPowers(){
+  let list = (data.powers || []).slice();
+  const rank = rankFilter_powers.value;
+  const q = searchBox_powers.value.toLowerCase().trim();
+  if(rank) list = list.filter(p => p.rank === rank);
+  if(q) list = list.filter(p => (p.name + ' ' + (p.summary||'') + ' ' + (p.full_text||'')).toLowerCase().includes(q));
+  if(currentSub === 'my') list = list.filter(p => favorites.powers.has(String(p.id)));
+  if(!list.length){ itemsList.innerHTML = '<div class=\"p-4 text-gray-600\">No powers found.</div>'; return; }
+  list.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'border rounded p-3 bg-white cursor-pointer hover:shadow';
+    card.innerHTML = `<div class="flex justify-between items-center"><span class="font-semibold">${p.name}</span>
+      <div class="flex items-center gap-2"><span class="text-sm text-gray-600">${p.rank || ''}</span>
+      <button class="text-xl favbtn">${favorites.powers.has(String(p.id)) ? '⭐' : '☆'}</button></div></div>
+      <div class="text-xs text-gray-700 mt-1 flex gap-2"><span>🔋 ${p.power_points || ''}</span><span>📏 ${p.range || ''}</span><span>🕑 ${p.duration || ''}</span></div>
+      <p class="text-sm mt-2">${p.summary || ''}</p>`;
+    const favBtn = card.querySelector('.favbtn');
+    favBtn.onclick = (e) => { e.stopPropagation(); toggleFavorite('powers', p.id); };
+    card.onclick = () => openModal('powers', p);
+    itemsList.appendChild(card);
+  });
+}
 
-        listEl.appendChild(card);
-      });
-    }
+// Edges render
+function renderEdges(){
+  let list = (data.edges || []).slice();
+  const rank = rankFilter_edges.value;
+  const cat = categoryFilter_edges.value;
+  const q = searchBox_edges.value.toLowerCase().trim();
+  if(rank) list = list.filter(e => e.rank === rank);
+  if(cat) list = list.filter(e => e.category === cat);
+  if(q) list = list.filter(e => (e.name + ' ' + e.summary + ' ' + e.description).toLowerCase().includes(q));
+  if(currentSub === 'my') list = list.filter(e => favorites.edges.has(String(e.id)));
+  if(!list.length){ itemsList.innerHTML = '<div class=\"p-4 text-gray-600\">No edges found.</div>'; return; }
+  list.forEach(e => {
+    const card = document.createElement('div');
+    card.className = 'border rounded p-3 bg-white cursor-pointer hover:shadow';
+    card.innerHTML = `<div class="flex justify-between items-center"><span class="font-semibold">${e.name}</span>
+      <div class="flex items-center gap-2"><span class="text-sm text-gray-600">${e.rank || e.category || ''}</span>
+      <button class="text-xl favbtn">${favorites.edges.has(String(e.id)) ? '⭐' : '☆'}</button></div></div>
+      <p class="text-sm mt-2">${e.summary || ''}</p>`;
+    const favBtn = card.querySelector('.favbtn');
+    favBtn.onclick = (ev) => { ev.stopPropagation(); toggleFavorite('edges', e.id); };
+    card.onclick = () => openModal('edges', e);
+    itemsList.appendChild(card);
+  });
+}
 
-    function openModal(p) {
-      modalName.textContent = p.name;
-      modalRank.textContent = `Rank: ${p.rank}`;
-      modalPP.textContent = p.power_points;
-      modalRange.textContent = p.range;
-      modalDuration.textContent = p.duration;
-      modalText.innerHTML = p.full_text;
+// Hindrances render
+function renderHindrances(){
+  let list = (data.hindrances || []).slice();
+  const type = typeFilter_hindrances.value;
+  const q = searchBox_hindrances.value.toLowerCase().trim();
+  if(type) list = list.filter(h => (h.type || '').toLowerCase() === type.toLowerCase());
+  if(q) list = list.filter(h => (h.name + ' ' + h.summary + ' ' + h.description).toLowerCase().includes(q));
+  if(currentSub === 'my') list = list.filter(h => favorites.hindrances.has(String(h.id)));
+  if(!list.length){ itemsList.innerHTML = '<div class=\"p-4 text-gray-600\">No hindrances found.</div>'; return; }
+  list.forEach(h => {
+    const card = document.createElement('div');
+    card.className = 'border rounded p-3 bg-white cursor-pointer hover:shadow';
+    card.innerHTML = `<div class="flex justify-between items-center"><span class="font-semibold">${h.name}</span>
+      <div class="flex items-center gap-2"><span class="text-sm text-gray-600">${h.type || ''}</span>
+      <button class="text-xl favbtn">${favorites.hindrances.has(String(h.id)) ? '⭐' : '☆'}</button></div></div>
+      <p class="text-sm mt-2">${h.summary || ''}</p>`;
+    const favBtn = card.querySelector('.favbtn');
+    favBtn.onclick = (ev) => { ev.stopPropagation(); toggleFavorite('hindrances', h.id); };
+    card.onclick = () => openModal('hindrances', h);
+    itemsList.appendChild(card);
+  });
+}
 
-      modalModifiers.innerHTML = "";
-      if (p.modifiers?.length) {
-        modalModifiersContainer.classList.remove("hidden");
-        p.modifiers.forEach(m => {
-          modalModifiers.insertAdjacentHTML("beforeend",
-            `<div class="border rounded bg-gray-50 p-3">
-               <p class="font-semibold text-red-700">
-                 ${m.name} <span class="text-gray-800">(${m.cost})</span>
-               </p>
-               <p class="text-sm text-gray-700 mt-1">${m.description}</p>
-             </div>`);
-        });
+// Traits render
+function renderTraits(){
+  let list = (data.traits || []).slice();
+  const q = searchBox_traits.value.toLowerCase().trim();
+  if(q) list = list.filter(t => (t.name + ' ' + t.description).toLowerCase().includes(q));
+  if(!list.length){ itemsList.innerHTML = '<div class=\"p-4 text-gray-600\">No traits found.</div>'; return; }
+  list.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'border rounded p-3 bg-white';
+    card.innerHTML = `<div class="flex justify-between items-center"><span class="font-semibold">${t.name}</span>
+      <div class="text-sm text-gray-600">${t.parent || ''}</div></div>
+      <p class="text-sm mt-2">${t.description || ''}</p>`;
+    itemsList.appendChild(card);
+  });
+}
 
-        document.getElementById("modalSource").textContent = `Source: ${p.source}`;
-      } else {
-        modalModifiersContainer.classList.add("hidden");
-      }
+// Modal open (unified)
+function openModal(kind, item){
+  modalName.textContent = item.name || '';
+  modalRank.textContent = item.rank ? 'Rank: ' + item.rank : '';
+  // stats area
+  modalStats.innerHTML = '';
+  if(kind === 'powers'){
+    const rows = [
+      `🔋 Power Points: ${item.power_points || ''}`,
+      `📏 Range: ${item.range || ''}`,
+      `🕑 Duration: ${item.duration || ''}`
+    ];
+    modalStats.innerHTML = rows.map(r => `<div>${r}</div>`).join('');
+  } else if(kind === 'edges'){
+    modalStats.innerHTML = `<div>Category: ${item.category || ''}</div><div>Requirements: ${item.requirements || ''}</div>`;
+  } else if(kind === 'hindrances'){
+    modalStats.innerHTML = `<div>Type: ${item.type || ''}</div>`;
+  } else {
+    modalStats.innerHTML = '';
+  }
 
-      modalFavBtn.textContent = favorites.has(p.id) ? "⭐ Remove from My Powers" : "☆ Add to My Powers";
-      modalFavBtn.onclick = () => { toggleFavorite(p.id); closeModal(); };
+  modalText.innerHTML = item.description || item.full_text || item.summary || '';
 
-      modalCopyBtn.onclick = () => {
-        navigator.clipboard.writeText(`${p.name} (${p.rank})\nPP: ${p.power_points}, Range: ${p.range}, Duration: ${p.duration}\n\n${p.full_text}`);
-        modalCopyBtn.textContent = "Copied!";
-        setTimeout(() => modalCopyBtn.textContent = "Copy Summary", 1200);
-      };
+  // modifiers only for powers
+  modalModifiers.innerHTML = '';
+  if(kind === 'powers' && item.modifiers && item.modifiers.length){
+    modalModifiersContainer.classList.remove('hidden');
+    item.modifiers.forEach(m => {
+      modalModifiers.insertAdjacentHTML('beforeend', `<div class="border rounded bg-gray-50 p-3">
+        <p class="font-semibold text-red-700">${m.name} <span class="text-gray-800">(${m.cost||''})</span></p>
+        <p class="text-sm text-gray-700 mt-1">${m.description||''}</p>
+      </div>`);
+    });
+  } else {
+    modalModifiersContainer.classList.add('hidden');
+  }
 
-      modal.classList.add("open");
-    }
+  modalSource.textContent = item.source ? 'Source: ' + item.source : '';
 
-    function closeModal() { modal.classList.remove("open"); }
-    modalClose.onclick = closeModal;
-    modal.onclick = e => { if (e.target === modal) closeModal(); };
-    document.addEventListener('keydown', e => { if (e.key === "Escape") { closeModal(); closeCommonModal(); }});
+  // favorite button text
+  modalFavBtn.textContent = (function(){
+    const id = String(item.id);
+    if(kind === 'powers') return favorites.powers.has(id) ? '⭐ Remove from My Powers' : '☆ Add to My Powers';
+    if(kind === 'edges') return favorites.edges.has(id) ? '⭐ Remove from My Edges' : '☆ Add to My Edges';
+    if(kind === 'hindrances') return favorites.hindrances.has(id) ? '⭐ Remove from My Hindrances' : '☆ Add to My Hindrances';
+    return '☆ Favorite';
+  })();
 
-    function renderCommonModifiers() {
-      commonModifiersList.innerHTML = "";
-      commonModifiers.forEach(m => {
-        commonModifiersList.insertAdjacentHTML("beforeend",
-          `<div class="border rounded p-3 bg-gray-50">
-             <p class="font-semibold text-red-700">
-               ▪ ${m.name} <span class="text-gray-800">(${m.cost})</span>
-             </p>
-             <p class="text-sm text-gray-800 ml-4">${m.description}</p>
-           </div>`);
-      });
-    }
+  modalFavBtn.onclick = () => { toggleFavorite(kind, item.id); closeModal(); };
 
-    function openCommonModal() { commonModal.classList.add("open"); }
-    function closeCommonModal() { commonModal.classList.remove("open"); }
-    btnCommonMods.onclick = openCommonModal;
-    commonModalClose.onclick = closeCommonModal;
-    commonModal.onclick = e => { if (e.target === commonModal) closeCommonModal(); };
+  modalCopyBtn.onclick = () => {
+    const text = `${item.name||''} ${item.rank? '('+item.rank+')':''}\n${item.summary||item.description||''}\n\n${item.full_text||''}`;
+    navigator.clipboard.writeText(text);
+    modalCopyBtn.textContent = 'Copied!';
+    setTimeout(()=> modalCopyBtn.textContent = 'Copy Summary', 1200);
+  };
 
-    rankFilter.onchange = renderPowers;
-    searchBox.oninput = renderPowers;
-    clearBtn.onclick = () => { rankFilter.value=""; searchBox.value=""; renderPowers(); };
-    tabAll.onclick = () => { currentTab="all"; tabAll.classList.add("tab-active"); tabFavs.classList.remove("tab-active"); renderPowers(); };
-    tabFavs.onclick = () => { currentTab="favs"; tabFavs.classList.add("tab-active"); tabAll.classList.remove("tab-active"); renderPowers(); };
+  modal.classList.add('open');
+}
 
-    document.addEventListener("DOMContentLoaded", loadPowers);
-  </script>
+// Modal close
+function closeModal(){ modal.classList.remove('open'); }
+modalClose.onclick = closeModal;
+modal.onclick = (e) => { if(e.target === modal) closeModal(); };
+document.addEventListener('keydown', e => { if(e.key === 'Escape'){ closeModal(); closeCommonModal(); }});
+
+// Common modifiers modal
+function renderCommonModifiers(){
+  commonModifiersList.innerHTML = '';
+  (data.common_modifiers || []).forEach(m => {
+    commonModifiersList.insertAdjacentHTML('beforeend', `<div class="border rounded p-3 bg-gray-50">
+      <p class="font-semibold text-red-700">▪ ${m.name} <span class="text-gray-800">(${m.cost||''})</span></p>
+      <p class="text-sm text-gray-800 ml-4">${m.description||''}</p>
+    </div>`);
+  });
+}
+function openCommonModal(){ commonModal.classList.add('open'); }
+function closeCommonModal(){ commonModal.classList.remove('open'); }
+btnCommonMods.onclick = openCommonModal;
+commonModalClose.onclick = closeCommonModal;
+commonModal.onclick = e => { if(e.target === commonModal) closeCommonModal(); };
+
+// Initialize
+document.addEventListener('DOMContentLoaded', loadData);
+</script>
 </body>
 </html>
